@@ -1,134 +1,193 @@
-Proposal Voting Smart Contract
-A decentralized voting system built with Clarity for the Stacks blockchain that allows users to submit proposals and vote on them.
-Features
+# 🗳️ Proposal Voting Smart Contract (Stacks / Clarity)
 
-Submit Proposals: Users can create new proposals with a title and description
-Vote on Proposals: Community members can vote "for" or "against" proposals
-Time-bound Voting: Each proposal has a defined voting period (10 days by default)
-Vote Tracking: Complete records of all votes and voting history
-Proposal Status: Automatic status updates based on voting results
-Anti-double Voting: Users cannot vote multiple times on the same proposal
+**Deployed Contract Address**  
+`ST1PQHQKV0RJXZFY1DGX8MNSNYVE3VGZJSRTPGZGM.proposal-voting`
 
-Contract Overview
-Core Functions
-Public Functions
+## 📜 Overview
 
-submit-proposal(title, description) - Create a new proposal
-vote(proposal-id, vote-for) - Cast a vote on a proposal
-close-proposal(proposal-id) - Close voting after the voting period ends
+This smart contract enables decentralized proposal submission and voting on the Stacks blockchain.
+Community members can create proposals, cast votes, and track results with complete transparency and anti-fraud protection.
+<img width="1920" height="711" alt="Screenshot 2025-08-20 at 02 34 48" src="https://github.com/user-attachments/assets/26412713-e6c9-4e5f-9ebe-07b4323fbbfb" />
 
-Read-Only Functions
 
-get-proposal(proposal-id) - Get full proposal details
-get-vote(proposal-id, voter) - Get specific vote details
-get-user-vote-count(user) - Get total votes cast by a user
-get-proposal-counter() - Get the current number of proposals
-is-voting-active(proposal-id) - Check if voting is still active
-get-proposal-results(proposal-id) - Get voting results summary
+![Proposal Voting System]
 
-Data Structures
-The contract uses three main maps to store data:
+## ⭐ Features
 
-Proposals Map: Stores proposal details including title, description, vote counts, and status
-Votes Map: Records individual votes with voter information and block height
-User Vote Count: Tracks how many votes each user has cast
+✅ **Submit Proposals** with title and description  
+✅ **Time-bound Voting** (10 days per proposal)  
+✅ **Anti-double Voting** protection  
+✅ **Complete Vote Tracking** and history  
+✅ **Automatic Result Calculation**  
+✅ **Transparent On-chain Storage**  
 
-Constants and Error Codes
+## ⚙️ Error Codes
+| Code | Meaning |
+|------|---------|
+| `u100` | `ERR-UNAUTHORIZED` → Caller lacks permission |
+| `u101` | `ERR-PROPOSAL-NOT-FOUND` → Invalid proposal ID |
+| `u102` | `ERR-ALREADY-VOTED` → User already voted on this proposal |
+| `u103` | `ERR-VOTING-ENDED` → Voting period has expired |
+| `u104` | `ERR-INVALID-PROPOSAL` → Proposal data is invalid |
+| `u105` | `ERR-PROPOSAL-TOO-SHORT` → Description < 10 characters |
 
-VOTING_PERIOD: 1440 blocks (~10 days)
-MIN_PROPOSAL_LENGTH: 10 characters minimum for descriptions
-Various error codes for different failure scenarios
+## 📦 Contract Functions
 
-Getting Started
-Prerequisites
+### `submit-proposal (title description)`
+Creates a new proposal for community voting.
 
-Clarinet installed
-Node.js for running tests (optional)
+**Parameters:**
+- `title` → Proposal title (max 100 chars)
+- `description` → Proposal description (min 10 chars, max 500)
 
-Installation
+**Flow:**
+1. Validate description length ≥ 10 characters
+2. Create proposal with unique ID
+3. Set voting period (1440 blocks ≈ 10 days)
+4. Initialize vote counts to zero
+5. Return new proposal ID on success
 
-Clone or create a new Clarinet project:
+**Example Call:**
+```clarity
+(contract-call? .proposal-voting submit-proposal 
+    u"Increase Block Rewards" 
+    u"Proposal to increase mining rewards by 10% to incentivize network security")
+```
 
-bashclarinet new proposal-voting
+### `vote (proposal-id vote-for)`
+Cast a vote on an active proposal.
+
+**Parameters:**
+- `proposal-id` → ID of the proposal to vote on
+- `vote-for` → `true` for YES, `false` for NO
+
+**Flow:**
+1. Verify proposal exists and voting is active
+2. Check user hasn't already voted
+3. Record vote with timestamp
+4. Update proposal vote counters
+5. Track user's total vote count
+
+**Example Call:**
+```clarity
+(contract-call? .proposal-voting vote u1 true)  ;; Vote YES on proposal #1
+(contract-call? .proposal-voting vote u2 false) ;; Vote NO on proposal #2
+```
+
+### `close-proposal (proposal-id)`
+Finalizes voting and determines proposal outcome.
+
+**Parameters:**
+- `proposal-id` → ID of proposal to close
+
+**Flow:**
+1. Verify voting period has ended
+2. Compare votes-for vs votes-against
+3. Update status to "passed" or "rejected"
+4. Return final status
+
+## 🔍 Read-Only Functions
+
+| Function | Purpose |
+|----------|---------|
+| `get-proposal(id)` | Get complete proposal details |
+| `get-vote(id, voter)` | Check specific vote record |
+| `get-proposal-results(id)` | Get voting summary and results |
+| `get-user-vote-count(user)` | Get user's total participation |
+| `is-voting-active(id)` | Check if proposal is still accepting votes |
+| `get-proposal-counter()` | Get total number of proposals |
+
+## 🛠️ Setup & Usage
+
+### Local Deployment (Clarinet)
+```bash
+clarinet new proposal-voting
 cd proposal-voting
 
-Replace the generated files with the contract code provided
-Install dependencies and verify setup:
+# Replace contracts/proposal-voting.clar with this contract
 
-bashclarinet check
-Testing
-Run the comprehensive test suite:
-bashclarinet test
-The tests cover:
+clarinet check
+clarinet test
+clarinet integrate  # Start local devnet
+```
 
-Proposal submission
-Voting functionality
-Double-vote prevention
-Data retrieval
-Edge cases and error conditions
+### On Testnet / Mainnet
+1. Deploy using Stacks CLI or Clarinet
+2. Open contract in Hiro Explorer  
+3. Call functions through web interface
+4. Monitor proposal activity and results
 
-Deployment
-Devnet (Local Testing)
-bashclarinet integrate
-Testnet
-bashclarinet deploy --testnet
-Mainnet
-bashclarinet deploy --mainnet
-Usage Examples
-Submitting a Proposal
-clarity(contract-call? .proposal-voting submit-proposal 
-    u"Increase Block Rewards" 
-    u"Proposal to increase mining rewards by 10% to incentivize more miners")
-Voting on a Proposal
-clarity;; Vote FOR proposal #1
-(contract-call? .proposal-voting vote u1 true)
+**Deploy Commands:**
+```bash
+clarinet deploy --testnet   # Deploy to testnet
+clarinet deploy --mainnet   # Deploy to mainnet
+```
 
-;; Vote AGAINST proposal #1  
-(contract-call? .proposal-voting vote u1 false)
-Checking Proposal Status
-clarity(contract-call? .proposal-voting get-proposal u1)
-(contract-call? .proposal-voting get-proposal-results u1)
-Contract Architecture
-The contract follows these design principles:
+## 📊 Data Storage
 
-Security First: Prevents double voting and unauthorized access
-Transparency: All votes and proposals are publicly readable
-Time-bounded: Clear voting periods prevent indefinite voting
-Efficient: Uses maps for O(1) lookups of proposals and votes
-Extensible: Easy to modify voting periods and add new features
+### Proposals Map
+```clarity
+{
+  proposal-id: uint,
+  title: string-utf8,
+  description: string-utf8,
+  proposer: principal,
+  start-block: uint,
+  end-block: uint,
+  votes-for: uint,
+  votes-against: uint,
+  status: string-ascii
+}
+```
 
-Security Considerations
+### Votes Map
+```clarity
+{
+  proposal-id: uint,
+  voter: principal,
+  vote: bool,
+  block-height: uint
+}
+```
 
-Users can only vote once per proposal
-Voting is only allowed during the active voting period
-All data is immutable once recorded
-No admin functions that could manipulate votes
-Proposal validation prevents spam with minimum length requirements
+## 📄 Security Notes
 
-Gas Costs
-Approximate costs for main operations:
+🔒 **Immutable Records** → All votes permanently stored on-chain  
+🕒 **Time-locked Voting** → Cannot vote after 10-day period expires  
+🚫 **Double-vote Prevention** → One vote per user per proposal  
+🔍 **Complete Transparency** → All data publicly readable  
+⛓️ **Decentralized Storage** → No single point of failure  
 
-Submit proposal: ~1000 gas
-Cast vote: ~800 gas
-Read operations: <100 gas
+**Voting Period:** 1440 blocks (~10 days on Stacks)  
+**Minimum Description:** 10 characters to prevent spam  
+**No Admin Controls** → Fully autonomous once deployed  
 
-Future Enhancements
-Potential improvements for future versions:
+## 💰 Gas Costs
 
-Weighted voting based on token holdings
-Proposal categories and filtering
-Minimum quorum requirements
-Proposal amendments
-Delegation mechanisms
-Multi-choice voting (not just yes/no)
+| Operation | Estimated Cost |
+|-----------|---------------|
+| Submit Proposal | ~1000 gas |
+| Cast Vote | ~800 gas |
+| Read Functions | <100 gas |
+| Close Proposal | ~600 gas |
 
-Contributing
+## 👩‍💻 Tech Stack
 
-Fork the repository
-Create a feature branch
-Add tests for new functionality
-Ensure all tests pass
-Submit a pull request
+**Language:** Clarity (Stacks Smart Contracts)  
+**Tools:** Clarinet, Stacks CLI, GitHub  
+**Network:** Stacks Testnet/Mainnet  
+**Storage:** On-chain maps (decentralized)  
+**Frontend:** Compatible with Stacks.js and Hiro Wallet  
 
-License
-This project is open source and available under the MIT License.
+## 🚀 Future Enhancements
+
+🎯 **Weighted Voting** based on token holdings  
+📂 **Proposal Categories** and filtering  
+👥 **Minimum Quorum** requirements  
+📝 **Proposal Amendments** and updates  
+🏛️ **Delegation** mechanisms for governance  
+🔢 **Multi-choice Voting** beyond yes/no  
+
+---
+
+**Built with ❤️ for decentralized governance on Stacks**

@@ -1,0 +1,51 @@
+[project]
+name = "proposal-voting"
+description = "A decentralized proposal voting system"
+authors = ["Your Name <your.email@example.com>"]
+telemetry = true
+cache_dir = "./.cache"
+requirements = []
+
+[contracts.proposal-voting]
+path = "contracts/proposals.clar"
+clarity_version = 2
+epoch = 2.4
+
+[repl]
+costs_version = 2
+parser_version = 2
+
+[[repl.sessions]]
+name = "default"
+start = "clarinet console"
+
+[devnet]
+disable_bitcoin_explorer = false
+working_dir = "tmp/devnet"
+# port for stacks-node
+stacks_node_rpc_address = "0.0.0.0:20443"
+stacks_node_p2p_address = "0.0.0.0:20444"
+# port for bitcoin node
+bitcoin_node_rpc_address = "0.0.0.0:18443"
+bitcoin_node_p2p_address = "0.0.0.0:18444"
+# port for bitcoin node zmq
+bitcoin_node_zmq_address = "0.0.0.0:18555"
+# port for stacks api
+stacks_api_address = "0.0.0.0:3999"
+# port for stacks explorer
+stacks_explorer_address = "0.0.0.0:8000"
+# port for bitcoin explorer
+bitcoin_explorer_address = "0.0.0.0:8001"
+
+# Test accounts that will be funded
+[[devnet.pox_stacking_orders]]
+start_at_cycle = 0
+duration = 12
+wallet = "wallet_1"
+slots = 2500
+btc_address = "mr1iPkD9N3RJZZxXRk7xF9d36gffa6exNC"
+
+[devnet.bitcoin_controller]
+# port for bitcoin controller
+rpc_port = 18443
+p2p_port = 18444

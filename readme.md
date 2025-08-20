@@ -7,7 +7,8 @@
 
 This smart contract enables decentralized proposal submission and voting on the Stacks blockchain.
 Community members can create proposals, cast votes, and track results with complete transparency and anti-fraud protection.
-<img width="1920" height="711" alt="Screenshot 2025-08-20 at 02 34 48" src="https://github.com/user-attachments/assets/26412713-e6c9-4e5f-9ebe-07b4323fbbfb" />
+<img width="1920" height="1072" alt="image" src="https://github.com/user-attachments/assets/9775b180-56f2-4519-9f3f-e3365ea80adc" />
+
 
 
 ![Proposal Voting System]

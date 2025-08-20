@@ -1,7 +1,7 @@
 # 🗳️ Proposal Voting Smart Contract (Stacks / Clarity)
 
 **Deployed Contract Address**  
-`ST2JHG361ZXG51QTKY2NQCVBPPRRE2KZB1HR05NNC.proposal-voting`
+`ST307HGZ30M26PQTQQFEVKKMWPY1GG4BQXRANK82M.proposalsystem`
 
 ## 📜 Overview
 
